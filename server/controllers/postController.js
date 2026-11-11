@@ -5,6 +5,7 @@ import Tag from '../models/Tag.js';
 import '../models/User.js';
 import { generateUniqueSlug } from '../utils/generateSlug.js';
 import generateExcerpt from '../utils/generateExcerpt.js';
+import isHttpUrl from '../utils/isHttpUrl.js';
 import { normalizeTagNames, findOrCreateTags } from '../utils/resolveTags.js';
 
 // What we show about an author on public pages. Never the email or password.
@@ -15,14 +16,6 @@ const TAG_FIELDS = 'name slug';
 const fail = (res, status, message) => {
   res.status(status);
   throw new Error(message);
-};
-
-const isHttpUrl = (value) => {
-  try {
-    return ['http:', 'https:'].includes(new URL(value).protocol);
-  } catch {
-    return false;
-  }
 };
 
 // Checks the request body and returns ONLY the fields we allow the client to set.

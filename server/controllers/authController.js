@@ -1,16 +1,8 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
-
-// The ONLY shape in which a user is ever sent to the client.
-// Built field by field so the password hash can never slip into a response.
-const toUserResponse = (user) => ({
-  _id: user._id,
-  name: user.name,
-  email: user.email,
-  bio: user.bio,
-  avatarUrl: user.avatarUrl,
-});
+import toUserResponse from '../utils/toUserResponse.js';
+import { MAX_NAME_LENGTH, nameLength } from '../utils/userLimits.js';
 
 // POST /api/auth/register   (public)   body: { name, email, password }
 export const register = async (req, res) => {
@@ -25,6 +17,10 @@ export const register = async (req, res) => {
   if (!name.trim() || !email.trim() || !password) {
     res.status(400);
     throw new Error('Name, email and password are required');
+  }
+  if (nameLength(name.trim()) > MAX_NAME_LENGTH) {
+    res.status(400);
+    throw new Error(`Name must be at most ${MAX_NAME_LENGTH} characters`);
   }
   if (password.length < 6) {
     res.status(400);
