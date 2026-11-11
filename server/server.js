@@ -4,6 +4,15 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import authRoutes from './routes/authRoutes.js';
+
+// Refuse to start without the JWT settings: running without them would be insecure or broken.
+for (const name of ['JWT_SECRET', 'JWT_EXPIRES_IN']) {
+  if (!process.env[name]) {
+    console.error(`${name} is missing. Add it to server/.env (see .env.example).`);
+    process.exit(1);
+  }
+}
 
 const app = express();
 
@@ -21,6 +30,8 @@ app.get('/api/health', (req, res) => {
     uptimeSeconds: Math.round(process.uptime()),
   });
 });
+
+app.use('/api/auth', authRoutes); // /api/auth/register, /login, /me
 
 // --- Error handling (must come AFTER all routes) ---
 app.use(notFound);

@@ -10,9 +10,16 @@ export const notFound = (req, res, next) => {
 // it has exactly four parameters (err, req, res, next).
 // Every error in the app ends up here and is returned in the same JSON shape.
 export const errorHandler = (err, req, res, next) => {
-  // If a controller threw without setting a status, res.statusCode is still 200,
-  // which would be wrong for an error, so we use 500 (server error) instead.
-  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  // Pick the status code, in this order:
+  // 1. one a controller set with res.status(...)
+  // 2. one attached to the error itself (e.g. 400 from Express when the JSON body is malformed)
+  // 3. otherwise 500 (server error), because res.statusCode is still 200 which is wrong for an error.
+  let statusCode = 500;
+  if (res.statusCode !== 200) {
+    statusCode = res.statusCode;
+  } else if (err.status >= 400 && err.status < 500) {
+    statusCode = err.status;
+  }
 
   res.status(statusCode).json({
     message: err.message,

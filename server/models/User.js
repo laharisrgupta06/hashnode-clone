@@ -7,8 +7,10 @@ const userSchema = new mongoose.Schema(
     // unique: true makes MongoDB reject a second account with the same email.
     // lowercase: true stores "Me@Mail.com" as "me@mail.com".
     email: { type: String, required: true, unique: true, lowercase: true },
-    // This will hold the bcrypt HASH, never the plain password (done in Layer 1.3).
-    password: { type: String, required: true },
+    // Holds the bcrypt HASH, never the plain password.
+    // select: false = normal queries (find, findById, populate...) leave this field out.
+    // Only login asks for it explicitly with .select('+password').
+    password: { type: String, required: true, select: false },
     bio: { type: String, maxlength: 200, default: '' },
     avatarUrl: { type: String, default: '' },
   },
