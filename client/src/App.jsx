@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
+import ProtectedRoute from './components/layout/ProtectedRoute.jsx';
 import Feed from './pages/Feed.jsx';
 import PostDetail from './pages/PostDetail.jsx';
 import Tags from './pages/Tags.jsx';
@@ -15,7 +16,7 @@ import NotFound from './pages/NotFound.jsx';
 
 // The route table from PRD section 6.1. Navbar and Footer wrap every page;
 // only the <Routes> block in the middle changes when the URL changes.
-// NOTE: /dashboard, /editor/* and /settings are NOT protected yet. ProtectedRoute comes with the auth layer.
+// /dashboard, /editor/* and /settings are login-only: ProtectedRoute shows them only to a verified session.
 export default function App() {
   return (
     <div className="app">
@@ -29,11 +30,11 @@ export default function App() {
           <Route path="/tag/:slug" element={<TagPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/editor/new" element={<PostEditor />} />
-          <Route path="/editor/:id" element={<PostEditor />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/editor/new" element={<ProtectedRoute><PostEditor /></ProtectedRoute>} />
+          <Route path="/editor/:id" element={<ProtectedRoute><PostEditor /></ProtectedRoute>} />
           <Route path="/profile/:id" element={<Profile />} />
-          <Route path="/settings" element={<ProfileSettings />} />
+          <Route path="/settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
           {/* Any other URL */}
           <Route path="*" element={<NotFound />} />
         </Routes>
