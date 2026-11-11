@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 
 // Refuse to start without the JWT settings: running without them would be insecure or broken.
 for (const name of ['JWT_SECRET', 'JWT_EXPIRES_IN']) {
@@ -32,6 +33,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes); // /api/auth/register, /login, /me
+app.use('/api/posts', postRoutes); // /api/posts ...
 
 // --- Error handling (must come AFTER all routes) ---
 app.use(notFound);

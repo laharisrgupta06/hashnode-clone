@@ -14,7 +14,8 @@ const toUserResponse = (user) => ({
 
 // POST /api/auth/register   (public)   body: { name, email, password }
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  // `?? {}`: Express 5 leaves req.body undefined when a request has no body / JSON content-type.
+  const { name, email, password } = req.body ?? {};
 
   // typeof checks stop objects like { "$gt": "" } being passed as an email (NoSQL injection).
   if (typeof name !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
@@ -57,7 +58,7 @@ export const register = async (req, res) => {
 
 // POST /api/auth/login   (public)   body: { email, password }
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body ?? {};
 
   if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
     res.status(400);
