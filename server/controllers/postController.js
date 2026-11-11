@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import Post from '../models/Post.js';
-// populate() looks models up by name, so User and Tag must have been loaded (registered) somewhere.
+import Tag from '../models/Tag.js';
+// populate() looks models up by name, so the User model must have been loaded (registered) somewhere.
 import '../models/User.js';
-import '../models/Tag.js';
 import { generateUniqueSlug } from '../utils/generateSlug.js';
 import generateExcerpt from '../utils/generateExcerpt.js';
+import { normalizeTagNames, findOrCreateTags } from '../utils/resolveTags.js';
 
 // What we show about an author on public pages. Never the email or password.
 const PUBLIC_AUTHOR_FIELDS = 'name avatarUrl';
@@ -28,7 +29,9 @@ const isHttpUrl = (value) => {
 // Anything else in the body (author, slug, _id, ...) is ignored, so clients cannot
 // forge an author or overwrite a slug.
 // isCreate = true: title and content are required. false (update): only validate what was sent.
-// Note: `tags` is intentionally not handled here yet; tag linking is the next layer (2.2).
+// `tags` (an array of tag NAMES) is only validated here and returned as `tagNames`.
+// Creating the tags in the database happens later (resolveTagIds), after ALL validation passed,
+// so a rejected request never leaves new tags behind.
 const buildPostData = (body, res, isCreate) => {
   const data = {};
 
@@ -56,7 +59,21 @@ const buildPostData = (body, res, isCreate) => {
     data.status = body.status;
   }
 
+  // On update, leaving `tags` out keeps the current tags; sending [] removes them all.
+  if (body.tags !== undefined) {
+    const { names, error } = normalizeTagNames(body.tags);
+    if (error) fail(res, 400, error);
+    data.tagNames = names;
+  }
+
   return data;
+};
+
+// Splits `tagNames` out of the validated data and swaps it for real Tag ids (find-or-create).
+const resolveTagIds = async (data) => {
+  const { tagNames, ...fields } = data;
+  if (tagNames) fields.tags = await findOrCreateTags(tagNames);
+  return fields;
 };
 
 // Makes sure :id looks like a MongoDB id, otherwise Mongoose would throw a CastError (500).
@@ -76,10 +93,29 @@ const getOwnedPost = async (req, res) => {
   return post;
 };
 
-// GET /api/posts   (public)   query: ?search=keyword
-// Published posts only, newest first. The full Markdown content is left out (feed cards don't need it).
+// Published posts matching `extraFilter`, newest first, for feed-style lists.
+// The full Markdown content is left out (cards don't need it). Also used by the tag routes.
+export const findPublishedPosts = (extraFilter = {}) =>
+  Post.find({ ...extraFilter, status: 'published' }) // status last: callers cannot override it
+    .select('-content')
+    .populate('author', PUBLIC_AUTHOR_FIELDS)
+    .populate('tags', TAG_FIELDS)
+    .sort({ createdAt: -1 });
+
+// GET /api/posts   (public)   query: ?search=keyword  &tag=tag-slug   (both optional, combinable)
+// Published posts only, newest first.
 export const getPosts = async (req, res) => {
-  const filter = { status: 'published' };
+  const filter = {};
+
+  if (req.query.tag !== undefined) {
+    if (typeof req.query.tag !== 'string') fail(res, 400, 'Tag must be a single text value');
+    const tagSlug = req.query.tag.trim().toLowerCase();
+    if (tagSlug) {
+      const tag = await Tag.findOne({ slug: tagSlug });
+      if (!tag) return res.json({ posts: [] }); // unknown tag: nothing can match
+      filter.tags = tag._id;
+    }
+  }
 
   if (req.query.search !== undefined) {
     if (typeof req.query.search !== 'string') fail(res, 400, 'Search must be a single text value');
@@ -92,11 +128,7 @@ export const getPosts = async (req, res) => {
     }
   }
 
-  const posts = await Post.find(filter)
-    .select('-content')
-    .populate('author', PUBLIC_AUTHOR_FIELDS)
-    .populate('tags', TAG_FIELDS)
-    .sort({ createdAt: -1 });
+  const posts = await findPublishedPosts(filter);
 
   res.json({ posts });
 };
@@ -128,10 +160,11 @@ export const getPostBySlug = async (req, res) => {
   res.json({ post });
 };
 
-// POST /api/posts   (protected)   body: { title, content, coverImage, status }
+// POST /api/posts   (protected)   body: { title, content, coverImage, status, tags }
+// tags = array of tag names, e.g. ["JavaScript", "mongodb"]; unknown names become new tags.
 export const createPost = async (req, res) => {
   // Express 5 leaves req.body undefined when a request has no body / JSON content-type.
-  const data = buildPostData(req.body ?? {}, res, true);
+  const data = await resolveTagIds(buildPostData(req.body ?? {}, res, true));
 
   // The author always comes from the verified token, never from the request body.
   // Retry a few times in the rare case two posts grab the same slug at the same moment.
@@ -139,6 +172,7 @@ export const createPost = async (req, res) => {
     const slug = await generateUniqueSlug(data.title);
     try {
       const post = await Post.create({ ...data, slug, author: req.user._id });
+      await post.populate('tags', TAG_FIELDS);
       return res.status(201).json({ post });
     } catch (error) {
       if (error.code !== 11000) throw error; // 11000 = duplicate key; anything else is a real error
@@ -147,11 +181,11 @@ export const createPost = async (req, res) => {
   fail(res, 409, 'Could not generate a unique URL for this post, please try again');
 };
 
-// PUT /api/posts/:id   (protected, owner)   body: any of { title, content, coverImage, status }
+// PUT /api/posts/:id   (protected, owner)   body: any of { title, content, coverImage, status, tags }
 // The slug is deliberately NOT changed when the title changes, so existing links keep working.
 export const updatePost = async (req, res) => {
   const post = await getOwnedPost(req, res);
-  const data = buildPostData(req.body ?? {}, res, false);
+  const data = await resolveTagIds(buildPostData(req.body ?? {}, res, false));
 
   post.set(data);
   await post.save(); // runs the schema validators and refreshes updatedAt
