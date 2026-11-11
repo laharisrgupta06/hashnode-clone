@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 import toUserResponse from '../utils/toUserResponse.js';
 import { MAX_NAME_LENGTH, nameLength } from '../utils/userLimits.js';
+import { isValidEmail } from '../utils/isValidEmail.js';
 
 // POST /api/auth/register   (public)   body: { name, email, password }
 export const register = async (req, res) => {
@@ -28,6 +29,12 @@ export const register = async (req, res) => {
   }
 
   const cleanEmail = email.trim().toLowerCase();
+
+  // Only at register: login stays unchecked so accounts created before this rule can still sign in.
+  if (!isValidEmail(cleanEmail)) {
+    res.status(400);
+    throw new Error('Enter a valid email address');
+  }
 
   if (await User.findOne({ email: cleanEmail })) {
     res.status(409);
