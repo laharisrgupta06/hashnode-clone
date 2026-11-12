@@ -12,6 +12,7 @@ import { useEffect, useRef } from 'react';
 //   notice               - an informational message shown above the form (e.g. "Session expired")
 //   focusRequest         - { name, count }: when count changes, the field `name` receives focus
 //   footer               - content below the button (the link to the other page)
+//   aside                - optional editorial panel shown beside the form on wide screens
 export default function AuthForm({
   title,
   submitLabel,
@@ -23,6 +24,7 @@ export default function AuthForm({
   notice,
   focusRequest,
   footer,
+  aside,
 }) {
   const formRef = useRef(null);
 
@@ -34,6 +36,7 @@ export default function AuthForm({
   }, [focusRequest]);
 
   return (
+    <div className={aside ? 'auth-layout' : undefined}>
     <section className="auth-card">
       <h1>{title}</h1>
 
@@ -82,5 +85,11 @@ export default function AuthForm({
 
       <p className="auth-footer">{footer}</p>
     </section>
+    {aside && (
+      <aside className="auth-aside" aria-label="About DevPress">
+        {aside}
+      </aside>
+    )}
+    </div>
   );
 }

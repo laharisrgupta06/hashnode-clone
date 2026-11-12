@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import publicationRoutes from './routes/publicationRoutes.js';
 
 // Refuse to start without the JWT settings: running without them would be insecure or broken.
 for (const name of ['JWT_SECRET', 'JWT_EXPIRES_IN']) {
@@ -38,6 +39,7 @@ app.use('/api/auth', authRoutes); // /api/auth/register, /login, /me
 app.use('/api/posts', postRoutes); // /api/posts ...
 app.use('/api/tags', tagRoutes); // /api/tags, /api/tags/:slug/posts
 app.use('/api/users', userRoutes); // /api/users/:id, /api/users/me
+app.use('/api/publications', publicationRoutes); // publications, their public websites, domains
 
 // --- Error handling (must come AFTER all routes) ---
 app.use(notFound);

@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 import Post from '../models/Post.js';
 
-// "mine" is a real route (GET /api/posts/mine), so a post must never get that slug.
-const RESERVED_SLUGS = ['mine'];
+// "mine" is a real API route (GET /api/posts/mine) and "about" is a page of every publication
+// website (/p/<publication>/about), so an article must never get either slug.
+const RESERVED_SLUGS = ['mine', 'about'];
 
 // "Building a REST API with Express!" -> "building-a-rest-api-with-express"
 // `fallback` is what you get when nothing usable is left (e.g. a title like "!!!").

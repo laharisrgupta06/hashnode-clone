@@ -112,9 +112,12 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => endSession(false), [endSession]);
 
+  // After the user edits their profile (Settings), show the new name/avatar everywhere at once.
+  const updateUser = useCallback((nextUser) => setUser(nextUser), []);
+
   const value = useMemo(
-    () => ({ user, token, status, sessionExpired, login, register, logout, retry: verifySession }),
-    [user, token, status, sessionExpired, login, register, logout, verifySession]
+    () => ({ user, token, status, sessionExpired, login, register, logout, updateUser, retry: verifySession }),
+    [user, token, status, sessionExpired, login, register, logout, updateUser, verifySession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

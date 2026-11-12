@@ -5,7 +5,7 @@ import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import ErrorMessage from '../common/ErrorMessage.jsx';
 
 // Wrap a page in this to make it login-only:
-//   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+//   <Route path="/publications" element={<ProtectedRoute><MyPublications /></ProtectedRoute>} />
 // The page inside is only RENDERED once the server has confirmed the session, so its content
 // (and any data it would load) can never flash for a visitor who is not logged in.
 export default function ProtectedRoute({ children }) {

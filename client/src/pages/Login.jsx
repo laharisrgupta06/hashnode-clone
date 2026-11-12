@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
 import AuthForm from '../components/common/AuthForm.jsx';
+import PageMeta from '../components/common/PageMeta.jsx';
+import { SITE } from '../config/site.js';
 import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
 import { validateLogin } from '../utils/validation.js';
 import { safeRedirect } from '../utils/safeRedirect.js';
@@ -66,21 +68,31 @@ export default function Login() {
   ];
 
   return (
-    <AuthForm
-      title="Log in"
-      submitLabel="Log in"
-      fields={fields}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      submitting={submitting}
-      formError={formError}
-      notice={sessionExpired ? 'Your session has expired. Please log in again.' : ''}
-      focusRequest={focusRequest}
-      footer={
-        <>
-          New here? <Link to="/register" state={location.state}>Create an account</Link>
-        </>
-      }
-    />
+    <>
+      <PageMeta title="Log in" description={`Log in to ${SITE.name} to write and manage your articles.`} />
+      <AuthForm
+        title="Log in"
+        submitLabel="Log in"
+        fields={fields}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        formError={formError}
+        notice={sessionExpired ? 'Your session has expired. Please log in again.' : ''}
+        focusRequest={focusRequest}
+        footer={
+          <>
+            New here? <Link to="/register" state={location.state}>Create an account</Link>
+          </>
+        }
+        aside={
+          <>
+            <p className="auth-aside-kicker">Welcome back</p>
+            <p className="auth-aside-title">Your drafts are where you left them.</p>
+            <p className="auth-aside-text">Log in to open your publications, finish an article or publish the one that is ready.</p>
+          </>
+        }
+      />
+    </>
   );
 }

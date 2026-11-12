@@ -15,6 +15,8 @@ const postSchema = new mongoose.Schema(
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     // One post -> many tags (an array of Tag ids).
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+    // The publication this article belongs to. Set once at creation (owner-checked) and never moved.
+    publication: { type: mongoose.Schema.Types.ObjectId, ref: 'Publication', required: true, index: true },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Post from '../models/Post.js';
 import Tag from '../models/Tag.js';
+import Publication from '../models/Publication.js';
 // populate() looks models up by name, so the User model must have been loaded (registered) somewhere.
 import '../models/User.js';
 import { generateUniqueSlug } from '../utils/generateSlug.js';
@@ -11,6 +12,8 @@ import { normalizeTagNames, findOrCreateTags } from '../utils/resolveTags.js';
 // What we show about an author on public pages. Never the email or password.
 const PUBLIC_AUTHOR_FIELDS = 'name avatarUrl';
 const TAG_FIELDS = 'name slug';
+// What every article response says about its publication (enough to link to its website).
+export const PUBLICATION_FIELDS = 'name slug logoUrl appearance';
 
 // Small helper: set the HTTP status, then throw. errorMiddleware turns it into JSON.
 const fail = (res, status, message) => {
@@ -93,6 +96,7 @@ export const findPublishedPosts = (extraFilter = {}) =>
     .select('-content')
     .populate('author', PUBLIC_AUTHOR_FIELDS)
     .populate('tags', TAG_FIELDS)
+    .populate('publication', PUBLICATION_FIELDS)
     .sort({ createdAt: -1 });
 
 // GET /api/posts   (public)   query: ?search=keyword  &tag=tag-slug   (both optional, combinable)
@@ -131,6 +135,7 @@ export const getMyPosts = async (req, res) => {
   const posts = await Post.find({ author: req.user._id })
     .select('-content')
     .populate('tags', TAG_FIELDS)
+    .populate('publication', PUBLICATION_FIELDS)
     .sort({ createdAt: -1 });
 
   res.json({ posts });
@@ -139,7 +144,7 @@ export const getMyPosts = async (req, res) => {
 // GET /api/posts/id/:id   (protected, owner)   full post for the editor, drafts included
 export const getPostById = async (req, res) => {
   const post = await getOwnedPost(req, res);
-  await post.populate('tags', TAG_FIELDS);
+  await post.populate([{ path: 'tags', select: TAG_FIELDS }, { path: 'publication', select: PUBLICATION_FIELDS }]);
   res.json({ post });
 };
 
@@ -147,7 +152,8 @@ export const getPostById = async (req, res) => {
 export const getPostBySlug = async (req, res) => {
   const post = await Post.findOne({ slug: req.params.slug, status: 'published' })
     .populate('author', 'name bio avatarUrl')
-    .populate('tags', TAG_FIELDS);
+    .populate('tags', TAG_FIELDS)
+    .populate('publication', PUBLICATION_FIELDS);
 
   if (!post) fail(res, 404, 'Post not found');
   res.json({ post });
@@ -157,15 +163,24 @@ export const getPostBySlug = async (req, res) => {
 // tags = array of tag names, e.g. ["JavaScript", "mongodb"]; unknown names become new tags.
 export const createPost = async (req, res) => {
   // Express 5 leaves req.body undefined when a request has no body / JSON content-type.
-  const data = await resolveTagIds(buildPostData(req.body ?? {}, res, true));
+  const body = req.body ?? {};
+  // Every article belongs to a publication the author OWNS. Checked before anything is created,
+  // so a request naming someone else's publication changes nothing.
+  if (body.publication === undefined) fail(res, 400, 'Choose the publication this article belongs to');
+  if (typeof body.publication !== 'string' || !mongoose.isValidObjectId(body.publication)) fail(res, 400, 'Invalid publication id');
+  const publication = await Publication.findById(body.publication).select('owner');
+  if (!publication) fail(res, 404, 'Publication not found');
+  if (publication.owner.toString() !== req.user._id.toString()) fail(res, 403, 'Not authorized: you can only write in your own publications');
+
+  const data = await resolveTagIds(buildPostData(body, res, true));
 
   // The author always comes from the verified token, never from the request body.
   // Retry a few times in the rare case two posts grab the same slug at the same moment.
   for (let attempt = 0; attempt < 3; attempt++) {
     const slug = await generateUniqueSlug(data.title);
     try {
-      const post = await Post.create({ ...data, slug, author: req.user._id });
-      await post.populate('tags', TAG_FIELDS);
+      const post = await Post.create({ ...data, slug, author: req.user._id, publication: publication._id });
+      await post.populate([{ path: 'tags', select: TAG_FIELDS }, { path: 'publication', select: PUBLICATION_FIELDS }]);
       return res.status(201).json({ post });
     } catch (error) {
       if (error.code !== 11000) throw error; // 11000 = duplicate key; anything else is a real error
@@ -180,9 +195,10 @@ export const updatePost = async (req, res) => {
   const post = await getOwnedPost(req, res);
   const data = await resolveTagIds(buildPostData(req.body ?? {}, res, false));
 
+  // `publication` is not in the allowed fields, so an article can never be moved to another publication.
   post.set(data);
   await post.save(); // runs the schema validators and refreshes updatedAt
-  await post.populate('tags', TAG_FIELDS);
+  await post.populate([{ path: 'tags', select: TAG_FIELDS }, { path: 'publication', select: PUBLICATION_FIELDS }]);
 
   res.json({ post });
 };

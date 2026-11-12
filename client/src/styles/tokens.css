@@ -1,0 +1,119 @@
+/* DevPress design tokens: warm beige and charcoal, an editorial identity.
+   Every colour, type face, size, shadow and timing comes from here. Publication websites reuse these
+   and add their own accent colour (publication.css).
+   Contrast is enforced by src/styles/tokens.test.js (text >= 4.5:1, control borders >= 3:1).
+   Note: the reference bronze #A78355 is only 3.1:1 on beige, so it is used for decoration
+   (--bronze) and a deeper bronze (--accent-text) carries text. */
+:root {
+  color-scheme: light;
+
+  /* Grounds, from page to raised surface */
+  --bg: #f4f0ea; /* page */
+  --bg-alt: #e5d8cc; /* bands and panels: charcoal or --text-muted text only */
+  --surface: #fcfaf7; /* paper: forms, the editor, menus */
+  --surface-raised: #fcfaf7;
+  --surface-hover: #ede5db;
+  --border: #ddd2c6; /* decorative hairlines */
+  --border-strong: #c9bcae;
+  --border-control: #8c7e71; /* inputs and outlined buttons (>= 3:1 on bg and surface) */
+
+  /* Text */
+  --text: #292725;
+  --text-muted: #625d57;
+  --text-subtle: #67615a;
+
+  /* Charcoal: primary actions and dark bands */
+  --accent: #292725;
+  --accent-hover: #393633;
+  --on-accent: #fcfaf7;
+  --dark-bg: #292725;
+  --dark-surface: #393633;
+  --dark-text: #ede6dc;
+  --dark-muted: #c9beb2;
+  --dark-accent: #d2b27e;
+
+  /* Bronze */
+  --bronze: #a78355; /* decoration only: rules, underlines, illustration, large display */
+  --accent-text: #7e6038; /* bronze as text */
+  --link: #292725;
+  --link-underline: #a78355;
+  --focus: #7e6038;
+  --glow: rgb(167 131 85 / 0.18);
+
+  /* Feedback */
+  --danger: #a3362e;
+  --danger-strong: #a3362e;
+  --on-danger: #ffffff;
+  --danger-tint: #f6e4df;
+  --success: #3d6b48;
+  --success-tint: #e3ede2;
+  --warning: #86591a;
+  --warning-tint: #f3e7d2;
+  --info-tint: #ece4d9;
+  --disabled-opacity: 0.55;
+
+  /* Code: always a dark surface, for highlighted contrast */
+  --code-bg: #2b2826;
+  --code-header: #36322f;
+  --code-border: #45403b;
+  --code-text: #ece5dc;
+  --code-muted: #b7aa9c;
+
+  /* Typography: editorial serif for display, modern sans for interface and body, mono for code and labels */
+  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-display: clamp(2.6rem, 1.8rem + 3.6vw, 4.6rem);
+
+  /* Spacing (4px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Shape and elevation: restrained */
+  --radius-sm: 3px;
+  --radius: 5px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 1px 2px rgb(41 39 37 / 0.06);
+  --shadow-md: 0 10px 24px -14px rgb(41 39 37 / 0.28);
+  --shadow-lift: 0 22px 44px -22px rgb(41 39 37 / 0.38);
+
+  /* Layout */
+  --topbar-height: 64px;
+  --sidebar-width: 256px;
+  --content-max: 1080px;
+  --reading-max: 700px;
+  --gutter: var(--space-4);
+  --control-height: 40px;
+
+  /* Motion: transitions on transform, shadow and colour; nothing starts invisible */
+  --duration-fast: 140ms;
+  --duration: 220ms;
+  --duration-drawer: 200ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (pointer: coarse) {
+  :root {
+    --control-height: 44px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: var(--space-6);
+  }
+}

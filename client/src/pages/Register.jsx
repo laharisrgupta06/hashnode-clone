@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
 import AuthForm from '../components/common/AuthForm.jsx';
+import PageMeta from '../components/common/PageMeta.jsx';
+import { SITE } from '../config/site.js';
 import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
 import { validateRegister } from '../utils/validation.js';
 import { safeRedirect } from '../utils/safeRedirect.js';
@@ -62,20 +64,34 @@ export default function Register() {
   ];
 
   return (
-    <AuthForm
-      title="Create your account"
-      submitLabel="Register"
-      fields={fields}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      submitting={submitting}
-      formError={formError}
-      focusRequest={focusRequest}
-      footer={
-        <>
-          Already have an account? <Link to="/login" state={location.state}>Log in</Link>
-        </>
-      }
-    />
+    <>
+      <PageMeta title="Create your account" description={`Create a ${SITE.name} account to publish articles for developers.`} />
+      <AuthForm
+        title="Create your account"
+        submitLabel="Register"
+        fields={fields}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        formError={formError}
+        focusRequest={focusRequest}
+        footer={
+          <>
+            Already have an account? <Link to="/login" state={location.state}>Log in</Link>
+          </>
+        }
+        aside={
+          <>
+            <p className="auth-aside-kicker">After you register</p>
+            <p className="auth-aside-title">Three steps to your first article.</p>
+            <ol className="auth-aside-steps">
+              <li>Create a publication with its own name and address.</li>
+              <li>Write in Markdown with a live preview.</li>
+              <li>Publish when it reads right. Drafts stay private.</li>
+            </ol>
+          </>
+        }
+      />
+    </>
   );
 }

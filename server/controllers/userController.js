@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { findPublishedPosts } from './postController.js';
+import Publication from '../models/Publication.js';
 import toUserResponse from '../utils/toUserResponse.js';
 import isHttpUrl from '../utils/isHttpUrl.js';
 import { MAX_NAME_LENGTH, MAX_BIO_LENGTH, nameLength } from '../utils/userLimits.js';
@@ -22,10 +23,13 @@ export const getUserProfile = async (req, res) => {
   if (!user) fail(res, 404, 'User not found');
 
   const posts = await findPublishedPosts({ author: user._id });
+  // The publications this author runs (public identity only).
+  const publications = await Publication.find({ owner: user._id }).select('name slug tagline logoUrl').sort({ createdAt: 1 });
 
   res.json({
     user: { _id: user._id, name: user.name, bio: user.bio, avatarUrl: user.avatarUrl },
     posts,
+    publications,
   });
 };
 

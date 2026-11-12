@@ -3,7 +3,7 @@
 // so every destination goes through this function. Anything suspicious gives the fallback.
 //
 // Accepts a string ("/post/abc?x=1") or a router location ({ pathname, search, hash }).
-export function safeRedirect(from, fallback = '/dashboard') {
+export function safeRedirect(from, fallback = '/publications') {
   let target = '';
   if (typeof from === 'string') {
     target = from;
