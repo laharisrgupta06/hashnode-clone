@@ -8,7 +8,7 @@ const generateExcerpt = (markdown) => {
     .replace(/<[^>]*>/g, ' ') // raw HTML tags
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links: keep only the link text
-    .replace(/^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+/gm, '') // heading / quote / list markers
+    .replace(/^\s*(#{1,6}|>|[-*+]|\d+\.)\s+/gm, '') // heading / quote / list markers (nested lists too)
     .replace(/[`*_~]/g, '') // inline code, bold, italic, strikethrough marks
     .replace(/\s+/g, ' ') // collapse whitespace and new lines
     .trim();

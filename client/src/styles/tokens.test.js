@@ -71,6 +71,17 @@ describe('colour contrast (WCAG AA)', () => {
     expect(contrast(token('focus'), token(bg))).toBeGreaterThanOrEqual(3);
   });
 
+  // Article text colours on the platform grounds and on publication pages (ivory #fcfaf7, beige #f4f0ea);
+  // highlighted text (body text colours) on every highlight background.
+  const RICH = ['rust', 'amber', 'forest', 'ocean', 'plum', 'slate'];
+  const HL = ['yellow', 'green', 'blue', 'pink'];
+  it.each(RICH.flatMap((c) => [...SURFACES.map((bg) => [c, token(bg)]), [c, '#fcfaf7'], [c, '#f4f0ea']]))('--rich-%s on %s is at least 4.5:1', (c, bg) => {
+    expect(contrast(token(`rich-${c}`), bg.startsWith('#') ? bg : token(bg))).toBeGreaterThanOrEqual(4.5);
+  });
+  it.each(HL.flatMap((h) => [['text', h], ['text-muted', h], ...RICH.map((c) => [`rich-${c}`, h])]))('--%s on highlight %s is at least 4.5:1', (fg, h) => {
+    expect(contrast(token(fg), token(`rich-hl-${h}`))).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('the contrast formula itself is right (black on white is 21:1)', () => {
     expect(contrast('#000000', '#ffffff')).toBeCloseTo(21, 5);
   });

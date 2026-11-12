@@ -71,7 +71,7 @@ export default function MyPublications() {
                 <PublicationMark publication={pub} size={48} />
                 <div>
                   <h2>
-                    <Link to={workspacePath(pub.slug)}>{pub.name}</Link>
+                    <SiteLink to={workspacePath(pub.slug)}>{pub.name}</SiteLink>
                   </h2>
                   <code>/p/{pub.slug}</code>
                   {(pub.tagline || pub.description) && <p>{pub.tagline || pub.description}</p>}
@@ -92,17 +92,17 @@ export default function MyPublications() {
                 </div>
               </dl>
               <div className="my-pub-actions">
-                <Link to={workspacePath(pub.slug)} className="btn btn-primary">
+                <SiteLink to={workspacePath(pub.slug)} className="btn btn-primary">
                   Open workspace
-                </Link>
+                </SiteLink>
                 <SiteLink to={publicationPath(pub.slug)} className="btn btn-secondary">
                   <Icon name="external-link" size={16} />
                   Visit site
                 </SiteLink>
-                <Link to={workspacePath(pub.slug, 'settings')} className="btn btn-ghost" aria-label={`Settings for ${pub.name}`}>
+                <SiteLink to={workspacePath(pub.slug, 'settings')} className="btn btn-ghost" aria-label={`Settings for ${pub.name}`}>
                   <Icon name="settings" size={16} />
                   <span aria-hidden="true">Settings</span>
-                </Link>
+                </SiteLink>
               </div>
               <p className="visually-hidden">{plural(pub.publishedCount, 'published article')}</p>
             </li>

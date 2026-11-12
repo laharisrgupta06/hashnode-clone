@@ -9,6 +9,7 @@ import postRoutes from './routes/postRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import publicationRoutes from './routes/publicationRoutes.js';
+import { isMailConfigured } from './utils/mailer.js';
 
 // Refuse to start without the JWT settings: running without them would be insecure or broken.
 for (const name of ['JWT_SECRET', 'JWT_EXPIRES_IN']) {
@@ -51,4 +52,8 @@ const PORT = process.env.PORT || 5001;
 await connectDB();
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`);
+  // Say plainly whether password-reset email can be sent (no credentials are printed).
+  if (isMailConfigured()) console.log(`Email: SMTP configured (${process.env.SMTP_HOST})`);
+  else if (process.env.NODE_ENV === 'production') console.warn('Email: SMTP is NOT configured. Password reset requests will be refused until SMTP_* variables are set.');
+  else console.log('Email: SMTP not configured. Development mode: password reset links are printed here instead of emailed.');
 });

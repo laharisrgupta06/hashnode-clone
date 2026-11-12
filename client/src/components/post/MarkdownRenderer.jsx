@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Markdown, { defaultUrlTransform } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkDevpressFormat from './remarkDevpressFormat.js';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import oneDark from 'react-syntax-highlighter/dist/esm/styles/prism/one-dark';
 import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
@@ -127,10 +129,15 @@ const COMPONENTS = {
   img: ({ src, alt }) => (src ? <img src={src} alt={alt ?? ''} loading="lazy" decoding="async" referrerPolicy="no-referrer" /> : null),
 };
 
+// GFM adds strikethrough (~~text~~), tables and task lists. DevPress's formatting extensions
+// (underline, colour, highlight, font, size, alignment) are an exact allowlist: see
+// utils/richFormat.js. No other HTML is rendered.
+const REMARK_PLUGINS = [[remarkGfm, { singleTilde: false }], remarkDevpressFormat];
+
 export default function MarkdownRenderer({ content }) {
   return (
     <div className="markdown-body">
-      <Markdown components={COMPONENTS} urlTransform={defaultUrlTransform}>
+      <Markdown components={COMPONENTS} remarkPlugins={REMARK_PLUGINS} urlTransform={defaultUrlTransform}>
         {content}
       </Markdown>
     </div>

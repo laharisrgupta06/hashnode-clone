@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, select: false },
     bio: { type: String, maxlength: 200, default: '' },
     avatarUrl: { type: String, default: '' },
+    // Password reset: only a SHA-256 HASH of the emailed token is stored (never the token itself),
+    // with its expiry. Hidden from every normal query, like the password.
+    resetPasswordTokenHash: { type: String, select: false },
+    resetPasswordExpires: { type: Date, select: false },
+    resetPasswordRequestedAt: { type: Date, select: false },
   },
   // timestamps: true adds createdAt and updatedAt automatically.
   { timestamps: true }

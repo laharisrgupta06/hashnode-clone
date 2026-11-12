@@ -24,6 +24,19 @@ export const validateLogin = ({ email, password }) => {
   return errors;
 };
 
+export const validateForgotPassword = ({ email }) => {
+  const emailError = checkEmail(email);
+  return emailError ? { email: emailError } : {};
+};
+
+export const validateNewPassword = ({ password, confirm }) => {
+  const errors = {};
+  if (!password) errors.password = 'Choose a new password';
+  else if (password.length < MIN_PASSWORD_LENGTH) errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+  if (!errors.password && confirm !== password) errors.confirm = 'The two passwords do not match';
+  return errors;
+};
+
 export const validateRegister = ({ name, email, password }) => {
   const errors = {};
   const cleanName = name.trim();

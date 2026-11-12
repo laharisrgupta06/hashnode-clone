@@ -52,6 +52,19 @@
   --info-tint: #ece4d9;
   --disabled-opacity: 0.55;
 
+  /* Article formatting palette (utils/richFormat.js): text colours and highlight backgrounds.
+     Checked in tokens.test.js against every light ground an article can sit on. */
+  --rich-rust: #a3362e;
+  --rich-amber: #86591a;
+  --rich-forest: #2f6b4f;
+  --rich-ocean: #1d4e89;
+  --rich-plum: #6e3a7c;
+  --rich-slate: #4a5560;
+  --rich-hl-yellow: #f7e8a4;
+  --rich-hl-green: #d9ecd2;
+  --rich-hl-blue: #d5e4f4;
+  --rich-hl-pink: #f5d8df;
+
   /* Code: always a dark surface, for highlighted contrast */
   --code-bg: #2b2826;
   --code-header: #36322f;

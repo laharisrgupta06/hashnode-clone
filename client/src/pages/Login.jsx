@@ -23,6 +23,7 @@ export default function Login() {
   // safeRedirect so it can never point to another website. Otherwise the dashboard.
   const destination = safeRedirect(location.state?.from);
   const sessionExpired = location.state?.expired === true;
+  const passwordChanged = location.state?.passwordChanged === true;
 
   // Already logged in (or just logged in): leave this page.
   if (status === 'authenticated') return <Navigate to={destination} replace />;
@@ -78,10 +79,12 @@ export default function Login() {
         onSubmit={handleSubmit}
         submitting={submitting}
         formError={formError}
-        notice={sessionExpired ? 'Your session has expired. Please log in again.' : ''}
+        notice={sessionExpired ? 'Your session has expired. Please log in again.' : passwordChanged ? 'Your password has been changed. Log in with the new password.' : ''}
         focusRequest={focusRequest}
         footer={
           <>
+            <Link to="/forgot-password">Forgot your password?</Link>
+            <br />
             New here? <Link to="/register" state={location.state}>Create an account</Link>
           </>
         }

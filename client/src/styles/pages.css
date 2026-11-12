@@ -615,6 +615,72 @@
   font-size: 0.85em;
 }
 
+/* DevPress formatting extensions (utils/richFormat.js). Only these exact attributes can exist:
+   remarkDevpressFormat never renders any other HTML. */
+.markdown-body u {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.markdown-body del {
+  color: var(--text-muted);
+}
+
+.markdown-body mark {
+  padding: 0.05em 0.2em;
+  border-radius: 2px;
+  color: inherit;
+  background: var(--rich-hl-yellow);
+}
+
+.markdown-body mark[data-highlight='green'] { background: var(--rich-hl-green); }
+.markdown-body mark[data-highlight='blue'] { background: var(--rich-hl-blue); }
+.markdown-body mark[data-highlight='pink'] { background: var(--rich-hl-pink); }
+
+.markdown-body [data-color='rust'] { color: var(--rich-rust); }
+.markdown-body [data-color='amber'] { color: var(--rich-amber); }
+.markdown-body [data-color='forest'] { color: var(--rich-forest); }
+.markdown-body [data-color='ocean'] { color: var(--rich-ocean); }
+.markdown-body [data-color='plum'] { color: var(--rich-plum); }
+.markdown-body [data-color='slate'] { color: var(--rich-slate); }
+
+.markdown-body [data-font='serif'] { font-family: var(--font-display); }
+.markdown-body [data-font='sans'] { font-family: var(--font-sans); }
+.markdown-body [data-font='mono'] { font-family: var(--font-mono); font-size: 0.92em; }
+
+.markdown-body [data-size='small'] { font-size: 0.85em; }
+.markdown-body [data-size='large'] { font-size: 1.25em; }
+.markdown-body [data-size='xlarge'] { font-size: 1.55em; line-height: 1.3; }
+
+.markdown-body [data-align='center'] { text-align: center; }
+.markdown-body [data-align='right'] { text-align: right; }
+
+/* GFM tables and task lists */
+.markdown-body table {
+  display: block;
+  max-width: 100%;
+  margin: 0 0 var(--space-5);
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  text-align: left;
+}
+
+.markdown-body th {
+  background: var(--surface-hover);
+  font-weight: 600;
+}
+
+.markdown-body li:has(> input[type='checkbox']) {
+  list-style: none;
+}
+
 .code-block {
   margin: 0 0 var(--space-5);
   overflow: hidden;
@@ -1298,37 +1364,168 @@
 }
 
 .md-toolbar {
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
-  padding: var(--space-1);
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-2);
   border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
   background: var(--surface-hover);
 }
 
+/* the toolbar stays in reach while scrolling a long article (below the sticky editor header) */
+@media (min-width: 768px) {
+  .md-toolbar {
+    position: sticky;
+    top: calc(var(--topbar-height) + 64px);
+  }
+}
+
+.md-editor {
+  container-type: inline-size;
+  overflow: visible;
+}
+
+/* related controls stay together; groups are separated by a hairline */
+.md-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding-right: var(--space-2);
+  border-right: 1px solid var(--border-strong);
+}
+
+.md-group:last-child {
+  border-right: 0;
+}
+
 .md-tool {
-  display: inline-grid;
-  place-items: center;
-  width: var(--control-height);
-  height: var(--control-height);
-  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--space-2);
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color var(--duration-fast) ease,
     color var(--duration-fast) ease;
 }
 
-.md-tool:hover {
+.md-tool:hover:not(:disabled) {
   background: var(--surface);
   color: var(--text);
 }
 
-.md-tool:active {
+.md-tool:active:not(:disabled) {
   background: var(--bg-alt);
+}
+
+/* the format is active at the cursor */
+.md-tool[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--on-accent);
+}
+
+.md-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.md-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding-left: 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.md-choice select {
+  max-width: 9.5rem;
+  min-height: 32px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.md-choice select:hover {
+  border-color: var(--border-control);
+}
+
+.md-choice-style select {
+  min-width: 7.5rem;
+  font-weight: 600;
+}
+
+/* narrow editor: icons with tooltips; wide editor: icons with labels */
+@container (max-width: 880px) {
+  .md-tool-label {
+    display: none;
+  }
+}
+
+.md-image-form {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.md-image-fields {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 720px) {
+  .md-image-fields {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+.md-image-fields label {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.md-image-fields input {
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-base);
+}
+
+.md-image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  justify-self: start;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+}
+
+.md-image-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
 
 .md-editor textarea {

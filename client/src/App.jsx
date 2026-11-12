@@ -13,6 +13,8 @@ import Tags from './pages/Tags.jsx';
 import TagPage from './pages/TagPage.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import MyPublications from './pages/MyPublications.jsx';
 import NewPublication from './pages/NewPublication.jsx';
 import Overview from './pages/workspace/Overview.jsx';
@@ -48,6 +50,8 @@ function Platform() {
         <Route path="/tag/:slug" element={<TagPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
         <Route path="/privacy" element={<Privacy />} />
