@@ -37,7 +37,7 @@ Practical rules for anyone changing DevPress. They describe how the project is a
 - **Accessibility:** every control has a visible label or an accessible name; errors are linked to their field; focus stays visible; new motion respects `prefers-reduced-motion` and never hides content.
 - **Page titles:** every page sets its title with `PageMeta`.
 - **Copy:** plain, specific, British spelling; no em dashes in interface text.
-- **Links that leave the workspace for the public website** (and from My publications into a workspace) use `SiteLink` (new tab). All other internal navigation stays in the same tab.
+- **Links that leave the workspace for the public website** (and from My publications into a workspace, and from the Dashboard to a workspace, an article's editor or the public article) use `SiteLink` (new tab). All other internal navigation stays in the same tab.
 
 ## 4. Backend and API conventions
 

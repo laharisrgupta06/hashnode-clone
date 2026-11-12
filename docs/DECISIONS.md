@@ -85,7 +85,7 @@ Significant decisions, why they were made, and their consequences. Status: **Acc
 ### D12. New-tab rules
 **Status:** Accepted
 
-- **Decision:** links from the workspace to the public website and articles, and from My publications into a workspace, open in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and say so to screen readers. All other navigation stays in the same tab.
+- **Decision:** links from the workspace to the public website and articles, from My publications into a workspace, and from the Dashboard (`/dashboard`) to a publication's workspace, an article's editor or the public article, open in a new tab (`target="_blank"`, `rel="noopener noreferrer"`) and say so to screen readers. All other navigation stays in the same tab. The Dashboard refreshes its list when its tab becomes visible again.
 - **Why:** writers keep their working tab while checking the public result, without repeated use of Back.
 
 ### D13. No analytics yet

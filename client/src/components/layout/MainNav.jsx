@@ -10,6 +10,7 @@ export const PLATFORM_LINKS = [
 ];
 
 const ACCOUNT_LINKS = (user) => [
+  { to: '/dashboard', label: 'Dashboard', icon: 'file-text' },
   { to: '/publications', label: 'My publications', icon: 'layout-dashboard' },
   { to: `/profile/${user._id}`, label: 'Your profile', icon: 'user' },
   { to: '/settings', label: 'Account settings', icon: 'settings' },

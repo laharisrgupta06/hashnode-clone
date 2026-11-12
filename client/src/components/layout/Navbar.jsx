@@ -91,6 +91,10 @@ const Navbar = forwardRef(function Navbar({ menuOpen, onOpenMenu }, menuButtonRe
 
           {status === 'authenticated' && user && (
             <>
+              {/* Shown from 640px; narrower screens reach Dashboard through the menu drawer */}
+              <Link to="/dashboard" className="btn btn-ghost hide-below-640">
+                Dashboard
+              </Link>
               <Link to="/publications" className="btn btn-secondary hide-narrow">
                 My publications
               </Link>

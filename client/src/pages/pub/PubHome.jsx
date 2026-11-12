@@ -6,7 +6,7 @@ import PageMeta from '../../components/common/PageMeta.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import CoverImage from '../../components/common/CoverImage.jsx';
 import { useSite } from '../../components/publication/siteContext.js';
-import { formatDate } from '../../utils/format.js';
+import { formatDate, publishedDate } from '../../utils/format.js';
 import { workspacePath } from '../../utils/publication.js';
 
 // A publication's homepage: identity, topic filter and its PUBLISHED articles (list or grid).
@@ -88,7 +88,7 @@ export default function PubHome() {
                     </div>
                   )}
                   <p className="pub-post-meta">
-                    <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
+                    <time dateTime={publishedDate(post)}>{formatDate(publishedDate(post))}</time>
                     {post.author && <span> · {post.author.name}</span>}
                   </p>
                   <h3>

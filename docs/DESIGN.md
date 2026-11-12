@@ -95,7 +95,7 @@ Layout constants: top bar 64 px, workspace sidebar 256 px, content max 1080 px, 
 - **Status badges:** small mono uppercase (Draft, Published, Planned).
 - **Empty states:** a short explanation and the next useful action.
 - **Icons:** Lucide line icons drawn inline (`components/common/Icon.jsx`); always paired with a visible label or an accessible name.
-- **New tabs:** links from the workspace to the public website, and from My publications into a workspace, open in a new tab and announce it to screen readers (`SiteLink`).
+- **New tabs:** links from the workspace to the public website, from My publications into a workspace, and from the Dashboard to a workspace, an article's editor (Edit) or the public article (View), open in a new tab and announce it to screen readers (`SiteLink`).
 
 ## 7. The typewriter
 

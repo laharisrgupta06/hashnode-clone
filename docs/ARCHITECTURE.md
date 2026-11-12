@@ -36,7 +36,9 @@ The client is served by Vite in development (`:5173`) and as static files (`clie
 | Workspace | `/publications`, `/publications/new`, `/publications/:slug/{dashboard,articles,write,editor/:id,analytics,appearance,domain,settings}` | `AppShell` + `WorkspaceLayout` (sidebar) | Writing and managing a publication (owner only) |
 | Publication website | `/p/:slug`, `/p/:slug/about`, `/p/:slug/:postSlug` | `PublicationSite` (own header and footer, publication appearance) | What readers see |
 
-Legacy routes redirect: `/dashboard` → `/publications`, `/post/:slug` → the article's publication URL, `/editor/:id` → the article's workspace editor.
+`/dashboard` (login required) is the consolidated dashboard: every article of the logged-in user across all their publications, drafts included, from `GET /api/posts/mine`.
+
+Legacy routes redirect: `/post/:slug` → the article's publication URL, `/editor/:id` → the article's workspace editor.
 
 `App.jsx` also checks the hostname with `hostMode()` (`utils/publication.js`). On `localhost`, or when no platform domain is configured, everything is the platform. With `VITE_PLATFORM_DOMAIN` set, `<address>.<domain>` and verified custom domains render that publication's website at the root of the host.
 
@@ -188,6 +190,7 @@ erDiagram
       string excerpt "generated, max 250"
       string coverImage
       string status "draft | published"
+      date publishedAt "set by the server, null for drafts"
       objectId author
       objectId publication
       array tags
@@ -205,6 +208,8 @@ erDiagram
 ```
 
 All schemas have `createdAt` and `updatedAt` timestamps. Images are stored as URLs; no binary data is kept in MongoDB.
+
+**Publication date.** `Post.publishedAt` is set only by the server: to the current time when an article is published from draft (first publication, or again after being unpublished), kept unchanged while a published article is edited, and cleared to `null` when it returns to draft. Values sent by clients are ignored. Public lists (feed, search, topics, profiles, publication websites) are ordered by `publishedAt`, newest first, through one query (`findPublishedPosts`). Articles published before this field existed have no `publishedAt`; they sort and display by `createdAt` instead, so no migration is required.
 
 ### 4.4 Rules enforced on the server
 

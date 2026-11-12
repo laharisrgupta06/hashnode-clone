@@ -980,6 +980,20 @@
   font-size: var(--text-sm);
 }
 
+/* The publication an article belongs to, on the consolidated dashboard */
+.manage-item-pub {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 3px;
+}
+
+.manage-item-pub:hover {
+  color: var(--text);
+}
+
 .manage-item-title {
   margin: 0;
   font-family: var(--font-display);

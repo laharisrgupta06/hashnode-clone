@@ -16,6 +16,7 @@ import Register from './pages/Register.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import MyPublications from './pages/MyPublications.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 import NewPublication from './pages/NewPublication.jsx';
 import Overview from './pages/workspace/Overview.jsx';
 import Articles from './pages/workspace/Articles.jsx';
@@ -72,8 +73,10 @@ function Platform() {
           <Route path="settings" element={<PublicationSettings />} />
         </Route>
 
+        {/* All my articles across every publication (each publication also has its own Articles page) */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
         {/* Addresses from before publications existed */}
-        <Route path="/dashboard" element={<Navigate to="/publications" replace />} />
         <Route path="/editor/new" element={<Navigate to="/publications" replace />} />
         <Route path="/editor/:id" element={<ProtectedRoute><LegacyEditorRedirect /></ProtectedRoute>} />
         <Route path="/post/:slug" element={<LegacyPostRedirect />} />

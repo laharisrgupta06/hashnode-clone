@@ -11,6 +11,10 @@ const postSchema = new mongoose.Schema(
     coverImage: { type: String, default: '' },
     // Only 'published' posts are shown publicly; new posts default to 'draft'.
     status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+    // When the article was (last) published. Set ONLY by the server (postController): now on
+    // publishing a draft, kept while it stays published, cleared (null) when it goes back to draft.
+    // Articles published before this field existed have none; public lists then fall back to createdAt.
+    publishedAt: { type: Date, default: null },
     // One post -> one author. ref: 'User' lets us later call .populate('author').
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     // One post -> many tags (an array of Tag ids).

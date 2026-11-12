@@ -79,6 +79,8 @@ Legend: ✅ implemented and working · 🟡 partially implemented · ⏳ planned
 |---|---|---|
 | Create a publication | ✅ | Name, address (checked for availability while typing), tagline, description, logo URL, cover URL, appearance, with a live preview |
 | My publications | ✅ | All your publications with counts; each opens its workspace in a new tab |
+| Dashboard | ✅ | `/dashboard`: all your articles across every publication, drafts included, with status, publication date, View, Edit, Publish/Unpublish and Delete |
+| Publication dates | ✅ | Cards and article pages show when an article was published (not when it was first written); public lists are ordered by it |
 | Workspace Overview | ✅ | Real counts (published, drafts), recent articles, quick actions |
 | Articles and Drafts | ✅ | List, filter drafts, edit, publish/unpublish, view, delete with confirmation |
 | Settings | ✅ | Edit name, tagline, description, logo and cover URLs. The address is fixed after creation so links never break |

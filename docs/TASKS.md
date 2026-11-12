@@ -27,6 +27,8 @@ Updated 12 November 2026. A task is marked complete only when it is implemented 
 ### Frontend: publications
 - [x] Create publication with live preview and address availability check
 - [x] My publications; workspaces open in a new tab
+- [x] Consolidated dashboard (`/dashboard`): every article across all my publications, with status, publication date and quick actions
+- [x] Publication date (`publishedAt`): set on publishing, kept on edits, cleared on unpublishing; public lists ordered by it (legacy articles fall back to their creation date)
 - [x] Workspace: Overview, Articles, Drafts, Write, Appearance, Domain, Settings; Analytics labelled Planned
 - [x] Appearance: 5 accent colours, 2 typography presets, 2 homepage layouts, live preview
 - [x] Publication websites: homepage with topic filter, article pages, About page, publication appearance

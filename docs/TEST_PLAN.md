@@ -39,11 +39,11 @@ The tests never contact a server: `client/src/test/fakeServer.js` replaces Axios
 | Design | `styles/tokens.test.js` | WCAG contrast of every token pair in use, including the formatting palette |
 | Misc | `components/common/PageMeta.test.jsx`, `utils/apiError.test.js` | Page titles, error mapping |
 
-**Latest run (12 November 2026): 23 test files, 428 tests, all passing.** The production build (`npm run build`) also succeeded.
+**Latest run (12 November 2026): 26 test files, 450 tests, all passing.** This includes the consolidated dashboard (`pages/Dashboard.test.jsx`, including regression tests for a reload racing with Publish and Delete) and publication dates (`components/post/PostCard.test.jsx`, `utils/format.test.js`). The production build (`npm run build`) also succeeded.
 
 ## 3. Backend tests (outside the repository)
 
-The API was tested with six end-to-end scripts that call every endpoint over HTTP: registration and login, email validation, articles, tags, users and publications (including ownership checks and cross-account attempts). They are run against a local API started with the scratch database, after a preflight that registers a sentinel account and confirms it appears in the scratch database.
+The API was tested with seven end-to-end scripts that call every endpoint over HTTP: registration and login, email validation, articles, tags, users, publications (including ownership checks and cross-account attempts), and publication dates with the consolidated dashboard. They are run against a local API started with the scratch database, after a preflight that registers a sentinel account and confirms it appears in the scratch database.
 
 | Suite | Checks | Last result |
 |---|---|---|
@@ -53,7 +53,8 @@ The API was tested with six end-to-end scripts that call every endpoint over HTT
 | Tags | 94 | pass |
 | Users | 97 | pass |
 | Publications | 71 | pass |
-| **Total** | **436** | **all passing (12 November 2026)** |
+| Publication dates and dashboard (`publishedAt` lifecycle, ordering, legacy articles, `GET /posts/mine` scoping) | 54 | pass |
+| **Total** | **490** | **all passing (12 November 2026)** |
 
 **Password reset** was verified with a separate script (39 checks, all passing on 12 November 2026) in four server modes: development without SMTP (link in the terminal), development with SMTP, production without SMTP (clear refusal) and production with SMTP. Real emails were delivered to a local test mail server. The checks cover the neutral response for unknown emails, similar response times, hashed storage, 30-minute expiry, single use, replacement by a newer link, password rules, and that tokens never appear in responses or production logs.
 

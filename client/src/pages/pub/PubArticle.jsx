@@ -9,7 +9,7 @@ import Avatar from '../../components/common/Avatar.jsx';
 import CoverImage from '../../components/common/CoverImage.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import { useSite } from '../../components/publication/siteContext.js';
-import { formatDate, wasEdited } from '../../utils/format.js';
+import { formatDate, publishedDate, wasEdited } from '../../utils/format.js';
 
 const MarkdownRenderer = lazyWithReload(() => import('../../components/post/MarkdownRenderer.jsx'));
 
@@ -64,8 +64,8 @@ export default function PubArticle() {
             </Link>
           )}
           <span>
-            <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
-            {wasEdited(post.createdAt, post.updatedAt) && (
+            <time dateTime={publishedDate(post)}>{formatDate(publishedDate(post))}</time>
+            {wasEdited(publishedDate(post), post.updatedAt) && (
               <>
                 {' · '}Updated <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
               </>

@@ -42,11 +42,12 @@ describe('AppShell layout', () => {
     ]);
   });
 
-  it('a logged-in user also gets their workspace in the menu: My publications, profile, account settings', () => {
+  it('a logged-in user also gets their workspace in the menu: Dashboard, My publications, profile, account settings', () => {
     renderShell({ status: 'authenticated', user: ADA });
     fireEvent.click(menuButton());
     const nav = within(within(drawer()).getByRole('navigation', { name: 'Main' }));
     expect(nav.getAllByRole('link').map((a) => [a.textContent, a.getAttribute('href')]).slice(4)).toEqual([
+      ['Dashboard', '/dashboard'],
       ['My publications', '/publications'],
       ['Your profile', '/profile/u1'],
       ['Account settings', '/settings'],

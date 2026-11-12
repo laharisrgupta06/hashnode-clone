@@ -89,15 +89,33 @@ const getOwnedPost = async (req, res) => {
   return post;
 };
 
-// Published posts matching `extraFilter`, newest first, for feed-style lists.
-// The full Markdown content is left out (cards don't need it). Also used by the tag routes.
-export const findPublishedPosts = (extraFilter = {}) =>
-  Post.find({ ...extraFilter, status: 'published' }) // status last: callers cannot override it
-    .select('-content')
-    .populate('author', PUBLIC_AUTHOR_FIELDS)
-    .populate('tags', TAG_FIELDS)
-    .populate('publication', PUBLICATION_FIELDS)
-    .sort({ createdAt: -1 });
+// The publication date a status change leads to (publishedAt is never taken from the request):
+//   draft -> published: now (first publication, or a republication after unpublishing)
+//   published -> published (an edit): unchanged
+//   -> draft: null (no longer published)
+const publishedAtFor = (currentStatus, currentPublishedAt, nextStatus) => {
+  if (nextStatus !== 'published') return null;
+  return currentStatus === 'published' ? currentPublishedAt : new Date();
+};
+
+// Published posts matching `extraFilter`, most recently PUBLISHED first, for feed-style lists
+// (feed, tag pages, profiles, publication websites). The full Markdown content is left out.
+// Articles published before publishedAt existed have none: they sort by createdAt instead, so they
+// keep their place without a database migration.
+export const findPublishedPosts = async (extraFilter = {}) => {
+  const posts = await Post.aggregate([
+    { $match: { ...extraFilter, status: 'published' } }, // status last: callers cannot override it
+    // publishedAt is always present in the response (null for legacy articles, like find() gives).
+    { $addFields: { sortDate: { $ifNull: ['$publishedAt', '$createdAt'] }, publishedAt: { $ifNull: ['$publishedAt', null] } } },
+    { $sort: { sortDate: -1, _id: -1 } },
+    { $project: { content: 0, sortDate: 0 } },
+  ]);
+  return Post.populate(posts, [
+    { path: 'author', select: PUBLIC_AUTHOR_FIELDS },
+    { path: 'tags', select: TAG_FIELDS },
+    { path: 'publication', select: PUBLICATION_FIELDS },
+  ]);
+};
 
 // GET /api/posts   (public)   query: ?search=keyword  &tag=tag-slug   (both optional, combinable)
 // Published posts only, newest first.
@@ -173,6 +191,7 @@ export const createPost = async (req, res) => {
   if (publication.owner.toString() !== req.user._id.toString()) fail(res, 403, 'Not authorized: you can only write in your own publications');
 
   const data = await resolveTagIds(buildPostData(body, res, true));
+  data.publishedAt = publishedAtFor(null, null, data.status ?? 'draft');
 
   // The author always comes from the verified token, never from the request body.
   // Retry a few times in the rare case two posts grab the same slug at the same moment.
@@ -194,6 +213,8 @@ export const createPost = async (req, res) => {
 export const updatePost = async (req, res) => {
   const post = await getOwnedPost(req, res);
   const data = await resolveTagIds(buildPostData(req.body ?? {}, res, false));
+  // Only a status sent in this request can change the publication date; other edits keep it.
+  if (data.status !== undefined) data.publishedAt = publishedAtFor(post.status, post.publishedAt, data.status);
 
   // `publication` is not in the allowed fields, so an article can never be moved to another publication.
   post.set(data);

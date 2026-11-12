@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 
 // A link that opens in a NEW tab, so the page it starts from stays open: used from the workspace
-// to the PUBLIC publication website, and from My publications into a publication's workspace.
+// to the PUBLIC publication website, from My publications into a publication's workspace, and from
+// the Dashboard to a workspace, an article's editor (Edit) or the public article (View).
 // Screen readers are told about the new tab.
 // (Links between public pages, such as Explore, and within a workspace keep same-tab navigation.)
 export default function SiteLink({ to, children, 'aria-label': ariaLabel, ...rest }) {

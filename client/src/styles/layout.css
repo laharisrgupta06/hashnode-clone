@@ -559,6 +559,13 @@
 }
 
 /* ---------- Utilities ---------- */
+/* Top-bar extras that only fit from 640px; narrower screens reach them through the menu drawer. */
+@media (max-width: 639.98px) {
+  .hide-below-640 {
+    display: none !important;
+  }
+}
+
 @media (max-width: 479.98px) {
   .hide-narrow {
     display: none !important;

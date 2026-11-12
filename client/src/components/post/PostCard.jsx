@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import Avatar from '../common/Avatar.jsx';
 import CoverImage from '../common/CoverImage.jsx';
 import { TagList } from './TagPill.jsx';
-import { formatDate } from '../../utils/format.js';
+import { formatDate, publishedDate } from '../../utils/format.js';
 import { articlePath, publicationPath } from '../../utils/publication.js';
 
 // One article in a platform list (Explore, topics, author profiles). It links to the article
@@ -30,7 +30,7 @@ export default function PostCard({ post, showAuthor = true }) {
             </>
           )}
           <span aria-hidden="true">·</span>
-          <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
+          <time dateTime={publishedDate(post)}>{formatDate(publishedDate(post))}</time>
         </p>
         <h2 className="post-card-title">
           <Link to={href} className="stretched-link">

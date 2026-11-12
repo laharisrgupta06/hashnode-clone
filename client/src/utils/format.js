@@ -1,5 +1,5 @@
-// Date helpers for article metadata. The backend has no separate publish date, so "published" is the
-// post's createdAt (agreed project decision) and "updated" is updatedAt.
+// Date helpers for article metadata. "Published" is the post's publishedAt (set by the server when it
+// is published); "updated" is updatedAt.
 const DATE_FORMAT = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' });
 
 export function formatDate(value) {
@@ -12,6 +12,12 @@ const DATE_TIME_FORMAT = new Intl.DateTimeFormat('en', { month: 'short', day: 'n
 export function formatDateTime(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : DATE_TIME_FORMAT.format(date);
+}
+
+// The date an article was published. Articles published before the server recorded publishedAt
+// have none, so their creation date stands in (the same fallback the server uses for sorting).
+export function publishedDate(post) {
+  return post.publishedAt ?? post.createdAt;
 }
 
 // Saving a post always refreshes updatedAt, so tiny gaps (the same save) do not count as an edit.
